@@ -24,12 +24,12 @@ const app = express();
 const server = http.createServer(app);
 
 const io = new Server(server, {
-    cors: { origin: process.env.FRONTEND_URL || 'http://localhost:3000', methods: ['GET', 'POST'] },
+    cors: { origin: '*', methods: ['GET', 'POST'] },
 });
 app.set('io', io);
 
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
-app.use(cors({ origin: process.env.FRONTEND_URL || 'http://localhost:3000', credentials: true }));
+app.use(cors({ origin: '*', credentials: true }));
 app.use(morgan('dev'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
@@ -42,6 +42,17 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/chat', chatRoutes);
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok', db: 'postgresql' }));
+
+// Serve Frontend
+const frontendPath = path.join(__dirname, '../frontend/out');
+app.use(express.static(frontendPath));
+
+app.get('*', (req, res) => {
+    if (!req.path.startsWith('/api')) {
+        res.sendFile(path.join(frontendPath, 'index.html'));
+    }
+});
+
 app.use((err, req, res, next) => res.status(err.status || 500).json({ error: err.message }));
 
 setupSocket(io);

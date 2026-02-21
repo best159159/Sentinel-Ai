@@ -1,7 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    output: 'export',
     images: {
-        domains: ['res.cloudinary.com', 'localhost'], // Allowed localhost for local images fallback
+        unoptimized: true,
+        domains: ['res.cloudinary.com', 'localhost'],
     },
     eslint: {
         ignoreDuringBuilds: true,
