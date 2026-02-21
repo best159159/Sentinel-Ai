@@ -95,7 +95,7 @@ router.post('/', auth, reportLimiter, upload.single('image'), async (req, res) =
         let imageUrl = null;
         let base64Image = null;
         if (req.file) {
-            imageUrl = `http://localhost:${process.env.PORT || 5000}/uploads/${req.file.filename}`;
+            imageUrl = `/uploads/${req.file.filename}`;
             try {
                 const fs = require('fs');
                 const fileBuffer = fs.readFileSync(req.file.path);
