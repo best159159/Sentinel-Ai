@@ -6,21 +6,20 @@ import api from '@/lib/api';
 import { AdminStats, Incident } from '@/types';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
-import dynamic from 'next/dynamic';
-
-// Dynamic import Recharts to prevent SSR issues during build
-const BarChart = dynamic(() => import('recharts').then(mod => mod.BarChart), { ssr: false });
-const Bar = dynamic(() => import('recharts').then(mod => mod.Bar), { ssr: false });
-const XAxis = dynamic(() => import('recharts').then(mod => mod.XAxis), { ssr: false });
-const YAxis = dynamic(() => import('recharts').then(mod => mod.YAxis), { ssr: false });
-const CartesianGrid = dynamic(() => import('recharts').then(mod => mod.CartesianGrid), { ssr: false });
-const Tooltip = dynamic(() => import('recharts').then(mod => mod.Tooltip), { ssr: false });
-const ResponsiveContainer = dynamic(() => import('recharts').then(mod => mod.ResponsiveContainer), { ssr: false });
-const PieChart = dynamic(() => import('recharts').then(mod => mod.PieChart), { ssr: false });
-const Pie = dynamic(() => import('recharts').then(mod => mod.Pie), { ssr: false });
-const Cell = dynamic(() => import('recharts').then(mod => mod.Cell), { ssr: false });
-const AreaChart = dynamic(() => import('recharts').then(mod => mod.AreaChart), { ssr: false });
-const Area = dynamic(() => import('recharts').then(mod => mod.Area), { ssr: false });
+import {
+    BarChart,
+    Bar,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    ResponsiveContainer,
+    PieChart,
+    Pie,
+    Cell,
+    AreaChart,
+    Area,
+} from 'recharts';
 import {
     HiOutlineChartBar,
     HiOutlineExclamation,
