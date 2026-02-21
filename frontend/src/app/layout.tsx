@@ -8,6 +8,8 @@ import Chatbot from '@/components/Chatbot';
 
 const inter = Inter({ subsets: ['latin'] });
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Sentinel AI – Smart Community Safety Platform',
   description: 'AI-powered disaster and emergency monitoring system with live map visualization, real-time alerts, and intelligent analysis.',
