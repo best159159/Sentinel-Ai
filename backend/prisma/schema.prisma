@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String     @id @default(uuid())
+  email       String     @unique
+  password    String
+  name        String
+  lat         Float?
+  lng         Float?
+  role        String     @default("user") // "user" | "admin"
+  lastAlertAt DateTime?
+  incidents   Incident[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Incident {
+  id               String   @id @default(uuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type             String   // 'Flood' | 'Fire' | 'Earthquake' | 'Accident' | 'Crime' | 'Storm' | 'Other'
+  description      String
+  imageUrl         String?
+  lat              Float
+  lng              Float
+  status           String   @default("active") // "active" | "resolved" | "investigating"
+  
+  // AI Analysis embedded fields
+  classifiedType   String?
+  severityScore    Float    @default(0)
+  urgencyLevel     String   @default("Low") // "Low" | "Medium" | "High" | "Critical"
+  keywordsDetected String[] // PostgreSQL supports string arrays
+  recommendation   String?
+  confidenceScore  Float    @default(0)
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model NewsRisk {
+  id          String   @id @default(uuid())
+  province    String
+  riskScore   Float
+  summary     String
+  riskLevel   String   @default("Low")
+  
+  // Source nested fields flattened
+  sourceTitle String?
+  sourceUrl   String?
+  sourceDate  DateTime?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
