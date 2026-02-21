@@ -107,7 +107,17 @@ export default function MapPage() {
     const { registerLocation } = useSocket({
         onNewIncident: (incident) => {
             setIncidents((prev) => [incident, ...prev]);
-            toast.success(`🚨 New ${incident.type} incident reported`);
+            // Use the beautiful AlertNotification instead of the standard toast
+            setAlert({
+                id: incident._id,
+                type: incident.type,
+                description: incident.description,
+                severity: incident.aiAnalysis?.urgencyLevel || 'Medium',
+                imageUrl: incident.imageUrl,
+                recommendation: incident.aiAnalysis?.recommendation,
+                location: incident.location,
+                confidenceScore: incident.aiAnalysis?.confidenceScore,
+            });
         },
         onIncidentUpdated: (updated) => {
             setIncidents((prev) =>
