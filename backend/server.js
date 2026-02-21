@@ -43,16 +43,6 @@ app.use('/api/chat', chatRoutes);
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok', db: 'postgresql' }));
 
-// Serve Frontend
-const frontendPath = path.join(__dirname, '../frontend/out');
-app.use(express.static(frontendPath));
-
-app.get('*', (req, res) => {
-    if (!req.path.startsWith('/api')) {
-        res.sendFile(path.join(frontendPath, 'index.html'));
-    }
-});
-
 app.use((err, req, res, next) => res.status(err.status || 500).json({ error: err.message }));
 
 setupSocket(io);
@@ -80,7 +70,7 @@ setInterval(async () => {
     }
 }, 60 * 60 * 1000); // Every 1 hour
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.BACKEND_PORT || process.env.PORT || 5000;
 server.listen(PORT, () => {
     console.log(`\n🚀 Sentinel AI Backend running on port ${PORT}`);
     console.log(`📦 Database: PostgreSQL`);

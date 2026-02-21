@@ -233,7 +233,7 @@ export default function HomePage() {
             <span className="text-slate-200 font-bold text-lg">Sentinel <span className="text-blue-400">AI</span></span>
           </div>
           <p className="text-slate-400 text-sm font-medium">
-            Built with Next.js, OpenAI, Mapbox & SQLite
+            Built with Next.js, OpenAI GPT-4o, Mapbox & PostgreSQL
           </p>
         </div>
       </footer>
