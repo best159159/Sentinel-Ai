@@ -5,6 +5,7 @@ import { AuthProvider } from '@/context/AuthContext';
 import Navbar from '@/components/Navbar';
 import ToastProvider from '@/components/ToastProvider';
 import Chatbot from '@/components/Chatbot';
+import GlobalAlert from '@/components/GlobalAlert';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -31,6 +32,7 @@ export default function RootLayout({
           </main>
           <ToastProvider />
           <Chatbot />
+          <GlobalAlert />
         </AuthProvider>
       </body>
     </html>

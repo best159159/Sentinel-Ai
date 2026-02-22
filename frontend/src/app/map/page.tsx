@@ -124,20 +124,6 @@ export default function MapPage() {
                 prev.map((inc) => (inc._id === updated._id ? updated : inc))
             );
         },
-        onProximityAlert: (data) => {
-            if (user && data.alertedUsers.includes(user._id)) {
-                setAlert({
-                    id: data.incident._id,
-                    type: data.incident.type,
-                    description: data.incident.description,
-                    severity: data.incident.severity,
-                    imageUrl: data.incident.imageUrl,
-                    recommendation: data.incident.recommendation,
-                    location: data.incident.location,
-                    confidenceScore: data.incident.aiAnalysis?.confidenceScore,
-                });
-            }
-        },
     });
 
     // Register user location for proximity alerts periodically
