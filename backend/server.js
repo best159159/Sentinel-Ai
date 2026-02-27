@@ -48,6 +48,7 @@ app.use((err, req, res, next) => res.status(err.status || 500).json({ error: err
 setupSocket(io);
 
 // Refresh news automatically every 1 hour using OpenAI
+/*
 setInterval(async () => {
     try {
         console.log('🔄 [Cron] Generating fake Thai emergency news via ChatGPT...');
@@ -69,6 +70,7 @@ setInterval(async () => {
         console.error('❌ [Cron] Error generating AI news:', err.message);
     }
 }, 60 * 60 * 1000); // Every 1 hour
+*/
 
 const PORT = process.env.BACKEND_PORT || process.env.PORT || 5000;
 server.listen(PORT, () => {
