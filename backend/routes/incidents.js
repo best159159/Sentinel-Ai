@@ -95,14 +95,10 @@ router.post('/', auth, reportLimiter, upload.single('image'), async (req, res) =
         let imageUrl = null;
         let base64Image = null;
         if (req.file) {
-            imageUrl = `/uploads/${req.file.filename}`;
-            try {
-                const fs = require('fs');
-                const fileBuffer = fs.readFileSync(req.file.path);
-                base64Image = `data:${req.file.mimetype};base64,${fileBuffer.toString('base64')}`;
-            } catch (err) {
-                console.error("Error reading image for AI:", err.message);
-            }
+            // Save the image directly as a Base64 string into PostgreSQL
+            const base64String = req.file.buffer.toString('base64');
+            imageUrl = `data:${req.file.mimetype};base64,${base64String}`;
+            base64Image = imageUrl; // Pass to AI service exactly as is
         }
 
         const analysis = await analyzeIncident(type, description, new Date().toISOString(), base64Image);
