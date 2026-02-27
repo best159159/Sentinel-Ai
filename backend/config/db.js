@@ -71,6 +71,14 @@ async function initDB() {
                     ALTER TABLE news_risks ADD COLUMN lng DOUBLE PRECISION;
                 END IF;
             END $$;
+
+            -- Add indexes to improve query performance significantly
+            CREATE INDEX IF NOT EXISTS idx_incidents_created_at ON incidents(created_at DESC);
+            CREATE INDEX IF NOT EXISTS idx_incidents_location ON incidents(lat, lng);
+            CREATE INDEX IF NOT EXISTS idx_incidents_type ON incidents(type);
+            CREATE INDEX IF NOT EXISTS idx_news_risks_created_at ON news_risks(created_at DESC);
+            CREATE INDEX IF NOT EXISTS idx_news_risks_risk_score ON news_risks(risk_score DESC);
+            CREATE INDEX IF NOT EXISTS idx_news_risks_location ON news_risks(lat, lng);
         `);
     console.log('✅ PostgreSQL ready');
   } catch (err) {

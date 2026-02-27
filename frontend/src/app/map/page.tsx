@@ -237,10 +237,16 @@ export default function MapPage() {
             {/* Map */}
             <div className="flex-1 relative bg-slate-50">
                 {loading && !incidents.length ? (
-                    <div className="absolute inset-0 flex items-center justify-center bg-slate-50/80 backdrop-blur-sm z-20">
-                        <div className="text-center bg-white p-6 rounded-2xl shadow-xl border border-slate-100">
-                            <div className="w-12 h-12 border-4 border-blue-100 border-t-blue-500 rounded-full animate-spin mx-auto mb-4" />
-                            <p className="text-slate-600 text-sm font-bold tracking-wide">Initializing Intelligence Map...</p>
+                    <div className="absolute inset-0 z-20 bg-slate-50 flex flex-col p-4 gap-4">
+                        <div className="w-full h-16 bg-white rounded-xl shadow-sm border border-slate-100 shimmer flex items-center px-6">
+                            <div className="w-8 h-8 rounded-full bg-slate-200"></div>
+                            <div className="ml-4 w-48 h-4 bg-slate-200 rounded-md"></div>
+                        </div>
+                        <div className="flex-1 w-full bg-white rounded-2xl shadow-sm border border-slate-100 shimmer flex items-center justify-center">
+                            <div className="text-center">
+                                <div className="w-16 h-16 border-4 border-slate-200 border-t-blue-500 rounded-full animate-spin mx-auto mb-4" />
+                                <p className="text-slate-400 text-sm font-bold tracking-wide">Loading Live Map Data...</p>
+                            </div>
                         </div>
                     </div>
                 ) : (

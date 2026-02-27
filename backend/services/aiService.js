@@ -38,7 +38,7 @@ Time: ${timestamp}
         ] : textPrompt;
 
         const response = await client.chat.completions.create({
-            model: 'gpt-4o',
+            model: 'gpt-4o-mini',
             messages: [{
                 role: 'user',
                 content: content
@@ -130,7 +130,7 @@ async function chatWithAssistant(userMessages) {
 
     try {
         const response = await client.chat.completions.create({
-            model: 'gpt-4o',
+            model: 'gpt-4o-mini',
             messages: [
                 {
                     role: 'system',

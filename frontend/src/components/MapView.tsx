@@ -135,9 +135,10 @@ export default function MapView({
             const extraSize = cluster.length > 1 ? Math.min(40, (cluster.length - 1) * 8) : 0;
             const size = baseSize + extraSize;
 
+            const pulseClass = primaryIncident.aiAnalysis?.urgencyLevel === 'Critical' ? 'pulse-ring' : '';
             const iconHtml = cluster.length > 1
-                ? `<div style="width:${size}px;height:${size}px;background:${color};border-radius:50%;border:4px solid white;box-shadow:0 0 ${10 + extraSize / 2}px ${color};display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:${12 + extraSize / 4}px; transition: all 0.3s ease;">${cluster.length}</div>`
-                : `<div style="width:20px;height:20px;background:${color};border-radius:50%;border:3px solid white;box-shadow:0 0 10px ${color}"></div>`;
+                ? `<div class="${pulseClass}" style="width:${size}px;height:${size}px;background:${color};border-radius:50%;border:4px solid white;box-shadow:0 0 ${10 + extraSize / 2}px ${color};display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:${12 + extraSize / 4}px; transition: all 0.3s ease;">${cluster.length}</div>`
+                : `<div class="${pulseClass}" style="width:20px;height:20px;background:${color};border-radius:50%;border:3px solid white;box-shadow:0 0 10px ${color}"></div>`;
 
             const icon = L.divIcon({
                 className: 'custom-pin',

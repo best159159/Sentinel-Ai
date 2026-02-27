@@ -15,6 +15,11 @@ export const metadata: Metadata = {
   title: 'Sentinel AI – Smart Community Safety Platform',
   description: 'AI-powered disaster and emergency monitoring system with live map visualization, real-time alerts, and intelligent analysis.',
   keywords: 'disaster monitoring, emergency response, AI analysis, community safety, real-time map',
+  manifest: '/manifest.json',
+};
+
+export const viewport = {
+  themeColor: '#3b82f6',
 };
 
 export default function RootLayout({

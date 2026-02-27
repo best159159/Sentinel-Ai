@@ -30,6 +30,15 @@ export default function AlertNotification({
 
     useEffect(() => {
         if (alert) {
+            // Haptic Feedback for High/Critical alerts
+            if (typeof navigator !== 'undefined' && navigator.vibrate) {
+                if (alert.severity === 'Critical') {
+                    navigator.vibrate([200, 100, 200, 100, 500]); // SOS-like pattern
+                } else if (alert.severity === 'High') {
+                    navigator.vibrate([200, 100, 200]);
+                }
+            }
+
             if (alert.autoExpand) {
                 setShowModal(true);
                 setIsVisible(false);
@@ -46,7 +55,7 @@ export default function AlertNotification({
             setShowModal(false);
             setIsVisible(false);
         }
-    }, [alert, onDismiss]);
+    }, [alert, onDismiss, showModal]);
 
     const severityColor = {
         Critical: 'border-l-red-500 bg-red-50',
