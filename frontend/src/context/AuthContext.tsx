@@ -1,88 +1,117 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import api from '@/lib/api';
-import { User, AuthResponse } from '@/types';
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+  updateProfile,
+} from 'firebase/auth';
+import { doc, setDoc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { auth, db } from '@/lib/firebase';
+import { User } from '@/types';
 
 interface AuthContextType {
-    user: User | null;
-    token: string | null;
-    loading: boolean;
-    login: (email: string, password: string) => Promise<void>;
-    register: (name: string, email: string, password: string, location?: { lat: number; lng: number }) => Promise<void>;
-    logout: () => void;
-    updateLocation: (lat: number, lng: number) => Promise<void>;
+  user: User | null;
+  firebaseUser: any;
+  loading: boolean;
+  login: (email: string, password: string) => Promise<void>;
+  register: (name: string, email: string, password: string, location?: { lat: number; lng: number }) => Promise<void>;
+  logout: () => Promise<void>;
+  updateLocation: (lat: number, lng: number) => Promise<void>;
+  // keep token for backward compat (returns Firebase ID token)
+  token: string | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-    const [user, setUser] = useState<User | null>(null);
-    const [token, setToken] = useState<string | null>(null);
-    const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(null);
+  const [firebaseUser, setFirebaseUser] = useState<any>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        // Restore session
-        const savedToken = localStorage.getItem('sentinel_token');
-        const savedUser = localStorage.getItem('sentinel_user');
-        if (savedToken && savedUser) {
-            setToken(savedToken);
-            setUser(JSON.parse(savedUser));
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (fbUser) => {
+      if (fbUser) {
+        setFirebaseUser(fbUser);
+        const idToken = await fbUser.getIdToken();
+        setToken(idToken);
+
+        // Load profile from Firestore
+        const profileSnap = await getDoc(doc(db, 'users', fbUser.uid));
+        if (profileSnap.exists()) {
+          const data = profileSnap.data();
+          setUser({
+            _id: fbUser.uid,
+            email: fbUser.email || '',
+            name: data.name || fbUser.displayName || '',
+            role: data.role || 'user',
+            location: data.location || { lat: 0, lng: 0 },
+          });
+        } else {
+          setUser({
+            _id: fbUser.uid,
+            email: fbUser.email || '',
+            name: fbUser.displayName || '',
+            role: 'user',
+            location: { lat: 0, lng: 0 },
+          });
         }
-        setLoading(false);
-    }, []);
-
-    const login = async (email: string, password: string) => {
-        const { data } = await api.post<AuthResponse>('/auth/login', { email, password });
-        setToken(data.token);
-        setUser(data.user);
-        localStorage.setItem('sentinel_token', data.token);
-        localStorage.setItem('sentinel_user', JSON.stringify(data.user));
-    };
-
-    const register = async (
-        name: string,
-        email: string,
-        password: string,
-        location?: { lat: number; lng: number }
-    ) => {
-        const { data } = await api.post<AuthResponse>('/auth/register', {
-            name,
-            email,
-            password,
-            location,
-        });
-        setToken(data.token);
-        setUser(data.user);
-        localStorage.setItem('sentinel_token', data.token);
-        localStorage.setItem('sentinel_user', JSON.stringify(data.user));
-    };
-
-    const logout = () => {
-        setToken(null);
+      } else {
+        setFirebaseUser(null);
         setUser(null);
-        localStorage.removeItem('sentinel_token');
-        localStorage.removeItem('sentinel_user');
-    };
+        setToken(null);
+      }
+      setLoading(false);
+    });
 
-    const updateLocation = async (lat: number, lng: number) => {
-        await api.put('/auth/location', { lat, lng });
-        if (user) {
-            const updated = { ...user, location: { lat, lng } };
-            setUser(updated);
-            localStorage.setItem('sentinel_user', JSON.stringify(updated));
-        }
-    };
+    return () => unsubscribe();
+  }, []);
 
-    return (
-        <AuthContext.Provider value={{ user, token, loading, login, register, logout, updateLocation }}>
-            {children}
-        </AuthContext.Provider>
-    );
+  const login = async (email: string, password: string) => {
+    await signInWithEmailAndPassword(auth, email, password);
+  };
+
+  const register = async (
+    name: string,
+    email: string,
+    password: string,
+    location?: { lat: number; lng: number }
+  ) => {
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    await updateProfile(cred.user, { displayName: name });
+
+    // Save extended profile to Firestore
+    await setDoc(doc(db, 'users', cred.user.uid), {
+      name,
+      email,
+      role: 'user',
+      location: location || { lat: 0, lng: 0 },
+      createdAt: serverTimestamp(),
+    });
+  };
+
+  const logout = async () => {
+    await signOut(auth);
+  };
+
+  const updateLocation = async (lat: number, lng: number) => {
+    if (!firebaseUser) return;
+    await updateDoc(doc(db, 'users', firebaseUser.uid), { location: { lat, lng } });
+    if (user) setUser({ ...user, location: { lat, lng } });
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, firebaseUser, loading, token, login, register, logout, updateLocation }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 export function useAuth() {
-    const context = useContext(AuthContext);
-    if (!context) throw new Error('useAuth must be used within AuthProvider');
-    return context;
+  const context = useContext(AuthContext);
+  if (!context) throw new Error('useAuth must be used within AuthProvider');
+  return context;
 }

@@ -8,6 +8,7 @@
         "start": "concurrently \"BACKEND_PORT=5001 node backend/server.js\" \"PORT=${PORT:-3000} node frontend/.next/standalone/server.js\""
     },
     "dependencies": {
+        "@dataconnect/generated": "file:src/dataconnect-generated",
         "concurrently": "^8.2.2"
     },
     "overrides": {

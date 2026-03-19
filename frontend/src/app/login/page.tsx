@@ -23,7 +23,15 @@ export default function LoginPage() {
             toast.success('Welcome back!');
             router.push('/map');
         } catch (err: any) {
-            toast.error(err.response?.data?.error || 'Login failed');
+            const getErrorMessage = (error: any) => {
+                const code = error.code;
+                if (code === 'auth/invalid-credential') return 'อีเมลหรือรหัสผ่านไม่ถูกต้อง';
+                if (code === 'auth/user-not-found') return 'ไม่พบบัญชีผู้ใช้นี้ (กรุณาสมัครสมาชิกใหม่)';
+                if (code === 'auth/wrong-password') return 'รหัสผ่านไม่ถูกต้อง';
+                if (code === 'auth/too-many-requests') return 'พยายามเข้าสู่ระบบบ่อยเกินไป กรุณารอสักครู่';
+                return error.message || 'เข้าสู่ระบบล้มเหลว';
+            };
+            toast.error(getErrorMessage(err));
         } finally {
             setLoading(false);
         }

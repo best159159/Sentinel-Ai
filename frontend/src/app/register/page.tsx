@@ -40,7 +40,14 @@ export default function RegisterPage() {
             toast.success('Account created successfully!');
             router.push('/map');
         } catch (err: any) {
-            toast.error(err.response?.data?.error || 'Registration failed');
+            const getErrorMessage = (error: any) => {
+                const code = error.code;
+                if (code === 'auth/email-already-in-use') return 'อีเมลนี้ถูกใช้งานแล้ว';
+                if (code === 'auth/invalid-email') return 'รูปแบบอีเมลไม่ถูกต้อง';
+                if (code === 'auth/weak-password') return 'รหัสผ่านอ่อนเกินไป (ต้อง 6 ตัวอักษรขึ้นไป)';
+                return error.message || 'สมัครสมาชิกไม่สำเร็จ';
+            };
+            toast.error(getErrorMessage(err));
         } finally {
             setLoading(false);
         }

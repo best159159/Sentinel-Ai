@@ -1,28 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    images: {
-        domains: ['res.cloudinary.com', 'localhost'],
-        unoptimized: true,
-    },
-    eslint: {
-        ignoreDuringBuilds: true,
-    },
-    typescript: {
-        ignoreBuildErrors: true,
-    },
-    async rewrites() {
-        const backendUrl = process.env.BACKEND_URL || 'http://localhost:5001';
-        return [
-            {
-                source: '/api/:path*',
-                destination: `${backendUrl}/api/:path*`,
-            },
-            {
-                source: '/uploads/:path*',
-                destination: `${backendUrl}/uploads/:path*`,
-            },
-        ];
-    },
+  images: {
+    domains: ['firebasestorage.googleapis.com', 'localhost'],
+    unoptimized: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
 };
 
 module.exports = nextConfig;
