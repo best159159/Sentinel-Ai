@@ -41,11 +41,19 @@ export function subscribeToIncidents(callback: (incidents: any[]) => void) {
 export async function getMyIncidents(userId: string) {
   const q = query(
     collection(db, 'incidents'),
-    where('userId', '==', userId),
-    orderBy('createdAt', 'desc')
+    where('userId', '==', userId)
   );
   const snap = await getDocs(q);
-  return snap.docs.map((d) => ({ _id: d.id, ...d.data() }));
+  const incidents = snap.docs.map((d) => ({ _id: d.id, ...d.data() }));
+  
+  return incidents.sort((a: any, b: any) => {
+    const getTime = (val: any) => {
+      if (!val) return 0;
+      if (typeof val.toDate === 'function') return val.toDate().getTime();
+      return new Date(val).getTime() || 0;
+    };
+    return getTime(b.createdAt) - getTime(a.createdAt);
+  });
 }
 
 export async function deleteIncident(id: string) {
